@@ -3,6 +3,7 @@ import { Projectile } from "./Projectile";
 
 // сдесь собраны все вспомогающие функции которые могут использоваться в более чем одном компоненте или методе приложения
 
+// Эта функция отрисовки сцены canvas а именно двух игроков и снарядов
 export const drawScene = (getApp: GameData, ctx: CanvasRenderingContext2D) => {
   const { players, projectiles, field } = getApp;
   ctx.clearRect(0, 0, field.width, field.height);
@@ -18,6 +19,7 @@ export const drawScene = (getApp: GameData, ctx: CanvasRenderingContext2D) => {
   });
 };
 
+//отрисовка отдельного персонажа
 export const drawPlayer = (player: PlayerData, ctx: CanvasRenderingContext2D) => {
   const playerColors = { player_1: "red", player_2: "blue" };
   const { posX, posY, radius } = player;
@@ -28,6 +30,8 @@ export const drawPlayer = (player: PlayerData, ctx: CanvasRenderingContext2D) =>
   ctx.fill();
 };
 
+// функция которая обновляет положение персонажа в зависимости от указаной скорости
+// так же меняет направление движения игрока при достижении края canvas
 export const movePlayers = ({ getApp, setApp }: GameProviderData) => {
   const players: Players = { ...getApp.players };
   Object.values(players).map((player) => {
@@ -39,6 +43,7 @@ export const movePlayers = ({ getApp, setApp }: GameProviderData) => {
   setApp({ ...getApp, players: players });
 };
 
+// функция которая обновляет положение всех снарядов на основе указанной скорости в момент их создания
 export const moveProjectiles = ({ getApp, setApp }: GameProviderData) => {
   const projectiles: Projectiles = { ...getApp.projectiles };
   Object.values(projectiles).map((emiter) => {
@@ -49,6 +54,7 @@ export const moveProjectiles = ({ getApp, setApp }: GameProviderData) => {
   setApp({ ...getApp, projectiles: projectiles });
 };
 
+// функция создания снаряда для обоих игроков
 export const spawnProjectile = (getApp: GameData) => {
   const players: player[] = ["player_1", "player_2"];
   const values = players.reduce((res, player) => {
@@ -68,6 +74,7 @@ export const spawnProjectile = (getApp: GameData) => {
   });
 };
 
+// функция которая отслеживает попадания снаряда по цели и обновляет счет
 export const detectCollision = ({ getApp, setApp }: GameProviderData) => {
   const { projectiles, players, score } = getApp;
   const entries = Object.entries(projectiles) as [player, ProjectileData[]][];
@@ -90,6 +97,8 @@ export const detectCollision = ({ getApp, setApp }: GameProviderData) => {
   setApp({ ...getApp, projectiles: updatedProjectiles, score: { ...score } });
 };
 
+// отслеживает положение курсора и если он находится на пути игрока
+//при соприкоснавении с крусором игрок меняет направление движения
 export const detectCursore = ({ getApp, setApp }: GameProviderData) => {
   const { clientX, clientY } = getApp.cursorPosition;
   const updatePlayers = { ...getApp.players };
@@ -103,6 +112,7 @@ export const detectCursore = ({ getApp, setApp }: GameProviderData) => {
   setApp({ ...getApp, players: updatePlayers });
 };
 
+// отрисовка снаряда
 export const drawProjectile = (projectile: Projectile, ctx: CanvasRenderingContext2D) => {
   const { posX, posY, color } = projectile;
   ctx.beginPath();
@@ -111,6 +121,7 @@ export const drawProjectile = (projectile: Projectile, ctx: CanvasRenderingConte
   ctx.fill();
 };
 
+// обновляет состояние контекста и задает новый цвет для снаряда отдельного игрока
 export const changeColor = ({ getApp, setApp }: GameProviderData, color: color) => {
   const colorMenu = { ...getApp.colorMenu };
   colorMenu.projectilesColor[colorMenu.player] = color;
